@@ -10,9 +10,15 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.LockModeType;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 /**
  *
@@ -29,6 +35,7 @@ public class Main {
         getAllBooksByGPA(em, 3.0);
         getAllBooksPageMoreThan(em, 100, 3.0);
         getAllStudentByGPA(em, 3.0);
+        getAllBooksByPageAndGPAAndAuthorAndPublisher(em);
         
         tx.commit();
         em.close();
@@ -57,7 +64,7 @@ public class Main {
         
         Publisher publisher = new Publisher();
         publisher.setName("Chicken Soup for the Soul, LLC");
-        publisher.setNumOfEmployee(100);
+        publisher.setNumOfEmployee(120);
         
         Publisher publisher1 = new Publisher();
         publisher1.setName("New York Time");
@@ -128,7 +135,9 @@ public class Main {
 
     //    1- Write a named query to return all books for a students with gpa >= 3.0.
     public static void getAllBooksByGPA(EntityManager em, Double gpa){
+//        LockModeType.PESSIMISTIC_READ);
         Query namedQuery = em.createNamedQuery("Book.findBookByStudentWithGPA");
+        namedQuery.setLockMode(LockModeType.PESSIMISTIC_READ); //enable Pessimistic_read
         namedQuery.setParameter("gpa", gpa);
         List<Book> books = namedQuery.getResultList();
         System.out.println("***************************All Books of Students with GPA >= 3.0***********************************");
@@ -148,17 +157,33 @@ public class Main {
     }
     
     //    3 - find the book with pages more than or equal to 120 pages and belonging to students with gpa >= 3.0 and written by an Author living in Iowa, and the book is published by a publisher with more than 100 employees
-    public static void getAllBooksByPageAndGPAAndAuthorAndPublisher(EntityManager em, Integer page, Double gpa, String state, Integer empNum){
-        String str = "Select s.books from Student s";
+    public static void getAllBooksByPageAndGPAAndAuthorAndPublisher(EntityManager em){
+//        String str = "Select b from Book b where b.page >= 120 and b.student.gpa >= 3.0 and b.author.address.state = 'Iowa'"
+//                + "and b.publisher.numOfEmployee >  100";   
         
+        CriteriaBuilder criBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Book> criQuery = criBuilder.createQuery(Book.class);
+        Root<Book> rootBook = criQuery.from(Book.class);
         
-        TypedQuery<Book> query = em.createNamedQuery("Student.native.GetAllBooksByPageAndGPA", Book.class);
-        query.setParameter(1, gpa);
-        query.setParameter(2, page);
+        criQuery.select(rootBook);        
+        Predicate pagePredicate = criBuilder.greaterThanOrEqualTo(rootBook.get("page"), 100);
+        
+//        e.get(EmployeeEntity_.employeeContactInfo).get(ContactInfoEntity_.phone));
+        Join<Book, Author> joinAuthor = rootBook.join("author");           
+        Predicate statePredicate = criBuilder.equal(joinAuthor.get(Author_.address).get(Address_.state), "Iowa");
+        
+        Join<Book, Publisher> joinPublisher = rootBook.join("publisher");
+        Predicate empPublisher = criBuilder.greaterThan(joinPublisher.get("numOfEmployee"), 100);
+        
+        Predicate andPredicate = criBuilder.and(pagePredicate, statePredicate, empPublisher);
+        criQuery.where(andPredicate);
+        
+        TypedQuery<Book> query = em.createQuery(criQuery);
         List<Book> books = query.getResultList();
-        System.out.println("***************************All Books of Students with GPA >= 3.0, and Pages >= 100***********************************");
+        
+        System.out.println("******************All Books of Students with GPA >= 3.0, and Pages >= 120, Publisher in Iowa, Employee > 100********************");
         books.forEach(b -> System.out.println(b));
-        System.out.println("*********************************************************************************************************************");
+        System.out.println("********************************************************************************************************************************");
     }
     
 }
