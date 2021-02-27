@@ -25,7 +25,6 @@ import javax.persistence.Version;
 @Entity
 @NamedQueries({    
     @NamedQuery(name = "Student.findStudentByGPA", query = "SELECT s FROM Student s WHERE s.gpa >= :gpa"),
-//    @NamedQuery(name = "Student.findBookByGPA", query = "SELECT s.books FROM Student s WHERE s.gpa >= :gpa AND s.books != null"),
 }) 
 
 public class Student implements Serializable {

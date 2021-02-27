@@ -36,6 +36,7 @@ public class Main {
         getAllBooksPageMoreThan(em, 100, 3.0);
         getAllStudentByGPA(em, 3.0);
         getAllBooksByPageAndGPAAndAuthorAndPublisher(em);
+        getAllBooksByPageAndGPAAndAuthorAndPublisher1(em);
         
         tx.commit();
         em.close();
@@ -168,7 +169,6 @@ public class Main {
         criQuery.select(rootBook);        
         Predicate pagePredicate = criBuilder.greaterThanOrEqualTo(rootBook.get("page"), 100);
         
-//        e.get(EmployeeEntity_.employeeContactInfo).get(ContactInfoEntity_.phone));
         Join<Book, Author> joinAuthor = rootBook.join("author");           
         Predicate statePredicate = criBuilder.equal(joinAuthor.get(Author_.address).get(Address_.state), "Iowa");
         
@@ -184,6 +184,31 @@ public class Main {
         System.out.println("******************All Books of Students with GPA >= 3.0, and Pages >= 120, Publisher in Iowa, Employee > 100********************");
         books.forEach(b -> System.out.println(b));
         System.out.println("********************************************************************************************************************************");
+    }
+    
+    // Start from Student
+    private static void getAllBooksByPageAndGPAAndAuthorAndPublisher1(EntityManager em) {
+        CriteriaBuilder criBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Book> criQuery = criBuilder.createQuery(Book.class);
+        Root<Student> root = criQuery.from(Student.class);
+        criQuery.select(root.get("books"));
+        
+        Join<Student, Book> joinBook = root.join("books");
+        Predicate pagePredicate = criBuilder.greaterThanOrEqualTo(joinBook.get("page"), 100);
+        
+        Join<Book, Author> joinAuthor = joinBook.join("author");
+        Predicate statePredicate = criBuilder.equal(joinAuthor.get(Author_.address).get(Address_.state), "Iowa");
+        
+        Join<Book, Publisher> joinPublisher = joinBook.join("publisher");
+        Predicate empPublisher = criBuilder.greaterThan(joinPublisher.get("numOfEmployee"), 100);
+        
+        Predicate andPredicate = criBuilder.and(pagePredicate, statePredicate, empPublisher);
+        criQuery.where(andPredicate);
+        TypedQuery<Book> query = em.createQuery(criQuery);
+        List<Book> books = query.getResultList();
+        System.out.println("$$$$$$$$$$$$$$$$$All Books of Students with GPA >= 3.0, and Pages >= 120, Publisher in Iowa, Employee > 100$$$$$$$$$$$$$$$$");
+        books.forEach(b -> System.out.println(b));
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
     }
     
 }
