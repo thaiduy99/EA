@@ -28,7 +28,7 @@ public abstract class Student implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;    
     private String name;
-    private double gpa;
+    private Double gpa;
 
     public Long getId() {
         return id;
@@ -46,16 +46,14 @@ public abstract class Student implements Serializable {
         this.name = name;
     }
 
-    public double getGpa() {
+    public Double getGpa() {
         return gpa;
     }
 
-    public void setGpa(double gpa) {
+    public void setGpa(Double gpa) {
         this.gpa = gpa;
     }
 
-    
-    
     @Override
     public int hashCode() {
         int hash = 0;

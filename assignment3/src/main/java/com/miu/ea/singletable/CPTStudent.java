@@ -6,6 +6,7 @@
 package com.miu.ea.singletable;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,19 +22,19 @@ import javax.persistence.Id;
 public class CPTStudent extends Student implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    private Long id;
     private String job;
     private Integer salary;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+//    public Long getId() {
+//        return id;
+//    }
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
 
     public String getJob() {
         return job;
@@ -50,24 +51,31 @@ public class CPTStudent extends Student implements Serializable {
     public void setSalary(Integer salary) {
         this.salary = salary;
     }
-    
-    
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.job);
+        hash = 29 * hash + Objects.hashCode(this.salary);
         return hash;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CPTStudent)) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
             return false;
         }
-        CPTStudent other = (CPTStudent) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CPTStudent other = (CPTStudent) obj;
+        if (!Objects.equals(this.job, other.job)) {
+            return false;
+        }
+        if (!Objects.equals(this.salary, other.salary)) {
             return false;
         }
         return true;
@@ -75,7 +83,9 @@ public class CPTStudent extends Student implements Serializable {
 
     @Override
     public String toString() {
-        return "com.miu.ea.CPTStudent[ id=" + id + " ]";
+        return "CPTStudent{" + "name=" + this.getName() + ", gpa=" + this.getGpa()+ ", job=" + job + ", salary=" + salary + '}';
     }
+    
+    
     
 }

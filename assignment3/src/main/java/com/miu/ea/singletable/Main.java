@@ -30,11 +30,11 @@ public class Main {
         
         JobSearchStudent jobSearchStudent = new JobSearchStudent();
         jobSearchStudent.setName("Genzo");
-        jobSearchStudent.setGpa(4);
+        jobSearchStudent.setGpa(4.0);
         jobSearchStudent.setResume("Ansi C and Embedded System");
         jobSearchStudent.setStartJobSearchDate(LocalDate.now());
         em.persist(jobSearchStudent);
-        
+//        
         CPTStudent cptStudent = new CPTStudent();
         cptStudent.setName("Tien Pham");
         cptStudent.setGpa(3.6);
