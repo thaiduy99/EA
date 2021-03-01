@@ -7,11 +7,15 @@ package com.miu.ea;
 
 import com.miu.ea.listener.StudentListener;
 import java.io.Serializable;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.PostRemove;
 
 /**
@@ -28,7 +32,19 @@ public class Student implements Serializable {
     private Long id;
     private String name;
     private Double gpa;
+    
+    @OneToMany(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "STUDENTID")
+    private List<Laptop> laptops;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public String getName() {
         return name;
     }
@@ -41,16 +57,16 @@ public class Student implements Serializable {
         return gpa;
     }
 
+    public List<Laptop> getLaptops() {
+        return laptops;
+    }
+
+    public void setLaptops(List<Laptop> laptops) {
+        this.laptops = laptops;
+    }
+    
     public void setGpa(Double gpa) {
         this.gpa = gpa;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @PostRemove
@@ -80,7 +96,8 @@ public class Student implements Serializable {
 
     @Override
     public String toString() {
-        return "com.miu.ea.Student[ id=" + id + " ]";
+        return "Student{" + "id=" + id + ", name=" + name + ", gpa=" + gpa + '}';
     }
 
+    
 }
