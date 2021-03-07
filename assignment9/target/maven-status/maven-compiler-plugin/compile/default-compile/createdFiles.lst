@@ -1,0 +1,5 @@
+com\miu\ea\service\PersistenceService.class
+com\miu\ea\business\Student.class
+com\miu\ea\business\Student_.class
+com\miu\ea\dao\StudentPersister.class
+com\miu\ea\presentation\Application.class
