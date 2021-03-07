@@ -1,0 +1,5 @@
+com\miu\ea\model\Student.class
+com\miu\ea\service\PersistenceService.class
+com\miu\ea\model\Student_.class
+com\miu\ea\StudentPersister.class
+com\miu\ea\Application.class
